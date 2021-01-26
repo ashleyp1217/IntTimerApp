@@ -4,6 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'timer.dart';
+
+Color salmon = Color(0xFFe07a5f);
+Color cream = Color(0xFFf4f1de);
+Color midnight = Color(0xFF3d405b);
+Color sage = Color(0xFF81b29a);
+Color dijon = Color(0xFFf2cc8f);
+
+Duration initialOnTimer = new Duration(minutes: 0, seconds: 45);
+Duration initialOffTimer = new Duration(minutes: 0, seconds: 15);
+
+int reps = 20;
+bool repsIsSwitched = false;
 
 class IntTimerSetUp_Page extends StatefulWidget {
   @override
@@ -11,8 +24,7 @@ class IntTimerSetUp_Page extends StatefulWidget {
 }
 
 class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
-  Duration initialOnTimer = new Duration(minutes: 0, seconds: 45);
-  Duration initialOffTimer = new Duration(minutes: 0, seconds: 15);
+  //COLOR PALETTE
 
   Widget onTimePicker() {
     return CupertinoTimerPicker(
@@ -22,14 +34,7 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
       initialTimerDuration: initialOnTimer,
       onTimerDurationChanged: (Duration changedTimer) {
         setState(() {
-          initialOnTimer = changedTimer;
-
-          int m = changedTimer.inMinutes;
-          int s = changedTimer.inSeconds % 60;
-          String min = (m < 10) ? '0' + m.toString() : m.toString();
-          String sec = (s < 10) ? '0' + s.toString() : s.toString();
-
-          onTime = min + ':' + sec;
+          onTime = durToString(changedTimer);
 
           initialOnTimer = changedTimer;
           int dur_insec = (initialOnTimer.inSeconds * reps) +
@@ -51,14 +56,7 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
       initialTimerDuration: initialOffTimer,
       onTimerDurationChanged: (Duration changedTimer) {
         setState(() {
-          initialOffTimer = changedTimer;
-
-          int m = changedTimer.inMinutes;
-          int s = changedTimer.inSeconds % 60;
-          String min = (m < 10) ? '0' + m.toString() : m.toString();
-          String sec = (s < 10) ? '0' + s.toString() : s.toString();
-
-          offTime = min + ':' + sec;
+          offTime = durToString(changedTimer);
 
           initialOffTimer = changedTimer;
           int dur_insec = (initialOnTimer.inSeconds * reps) +
@@ -193,20 +191,19 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                 ]))));
   }
 
-  String onTime = '00:45';
-  String offTime = '00:15';
-  int reps = 20;
+  String durToString(Duration dur) {
+    int m = (dur.inSeconds / 60).floor();
+    int s = (dur.inSeconds % 60).floor();
+    String min = (m < 10) ? '0' + m.toString() : m.toString();
+    String sec = (s < 10) ? '0' + s.toString() : s.toString();
+    return min + ':' + sec;
+  }
+
+  String onTime;
+  String offTime;
+
   String totalDur;
   TextEditingController repsController = TextEditingController();
-
-  //COLOR PALETTE
-  Color salmon = Color(0xFFe07a5f);
-  Color cream = Color(0xFFf4f1de);
-  Color midnight = Color(0xFF3d405b);
-  Color sage = Color(0xFF81b29a);
-  Color dijon = Color(0xFFf2cc8f);
-
-  bool isSwitched = false;
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +255,7 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                 ),
                 Container(
                     transform: Matrix4.translationValues(0.0, -20.0, 0.0),
-                    child: button(onTime, onPressed: () {
+                    child: button(durToString(initialOnTimer), onPressed: () {
                       bottomSheet(context, onTimePicker());
                     })),
                 Container(
@@ -283,7 +280,7 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                 ),
                 Container(
                     transform: Matrix4.translationValues(0.0, -20.0, 0.0),
-                    child: button(offTime, onPressed: () {
+                    child: button(durToString(initialOffTimer), onPressed: () {
                       bottomSheet(context, offTimePicker());
                     })),
                 Container(
@@ -305,10 +302,10 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                           Transform.scale(
                               scale: 1.2,
                               child: Switch(
-                                value: isSwitched,
+                                value: repsIsSwitched,
                                 onChanged: (value) {
                                   setState(() {
-                                    isSwitched = value;
+                                    repsIsSwitched = value;
                                   });
                                 },
                                 activeTrackColor: dijon.withOpacity(0.7),
@@ -317,7 +314,7 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                                 inactiveThumbColor: cream.withOpacity(0.7),
                               )),
                         ])),
-                (isSwitched)
+                (repsIsSwitched)
                     ? repsButton(reps, onPressed: () {
                         showDialog(
                             child: new Dialog(
@@ -379,7 +376,14 @@ class _IntTimerSetUp_PageState extends State<IntTimerSetUp_Page> {
                       })
                     : Container(),
                 startButton('START', onPressed: () {
-                  bottomSheet(context, onTimePicker());
+                  setState(() {
+                    starterVisible = true;
+                  });
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => Timer_Page(),
+                      ));
                 })
               ],
             ),
