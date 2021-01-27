@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_countdown_timer/index.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'intTimerSetUp.dart';
 import 'main.dart';
 
@@ -31,8 +33,8 @@ class _Timer_PageState extends State<Timer_Page> {
 
   void onGoBack() {
     setState(() {
-      initialOnTimer = new Duration(minutes: 0, seconds: 2);
-      initialOffTimer = new Duration(minutes: 0, seconds: 2);
+      initialOnTimer = new Duration(minutes: 0, seconds: 5);
+      initialOffTimer = new Duration(minutes: 0, seconds: 5);
       repsIsSwitched = false;
       reps = 2;
     });
@@ -90,12 +92,6 @@ class _Timer_PageState extends State<Timer_Page> {
                     ),
                     onPressed: () {
                       onGoBack();
-                      // setState(() {
-                      //   initialOnTimer = new Duration(minutes: 0, seconds: 2);
-                      //   initialOffTimer = new Duration(minutes: 0, seconds: 2);
-                      //   repsIsSwitched = true;
-                      //   reps = 2;
-                      // });
                       Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.pushNamedAndRemoveUntil(
@@ -104,6 +100,12 @@ class _Timer_PageState extends State<Timer_Page> {
               ]);
         });
   }
+
+  final interval = const Duration(seconds: 1);
+
+  final int timerMaxSeconds = 5;
+
+  int currentSeconds = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +178,15 @@ class _Timer_PageState extends State<Timer_Page> {
                                 isReverse: true,
                                 autoStart: false,
                                 onComplete: () {
+                                  // FlutterBeep.playSysSound(
+                                  //     iOSSoundIDs.CalendarAlert);
                                   if (onInterval) {
                                     if ((repsIsSwitched) && repCount == reps) {
                                       doneAlert();
+                                      FlutterBeep.playSysSound(
+                                          iOSSoundIDs.CalendarAlert);
                                     } else {
+                                      FlutterBeep.beep();
                                       setState(() {
                                         onInterval = false;
                                         timerController.restart(
@@ -187,6 +194,7 @@ class _Timer_PageState extends State<Timer_Page> {
                                       });
                                     }
                                   } else {
+                                    FlutterBeep.beep();
                                     setState(() {
                                       onInterval = true;
                                       if (repsIsSwitched) {
@@ -238,12 +246,6 @@ class _Timer_PageState extends State<Timer_Page> {
                       ),
                     )),
                 onPressed: () {
-                  // setState(() {
-                  //   initialOnTimer = new Duration(minutes: 0, seconds: 2);
-                  //   initialOffTimer = new Duration(minutes: 0, seconds: 2);
-                  //   repsIsSwitched = true;
-                  //   reps = 2;
-                  // });
                   onGoBack();
                   Navigator.pop(context);
                   Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
