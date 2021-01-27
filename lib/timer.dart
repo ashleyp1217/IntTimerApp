@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_countdown_timer/index.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 import 'intTimerSetUp.dart';
@@ -39,6 +38,24 @@ class _Timer_PageState extends State<Timer_Page> {
       reps = 2;
     });
   }
+
+  // Timer t;
+  // String tt;
+  // bool notPaused = true;
+  // void lastThreeSeconds() {
+  //   t = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     String getTime = timerController.getTime();
+  //     int sec = int.parse(getTime.split(':')[1]);
+  //     if ((sec < 4 && sec > 0) & notPaused) {
+  //       FlutterBeep.beep();
+  //       // FlutterBeep.playSysSound(iOSSoundIDs.TouchTone1);
+  //       // FlutterBeep.playSysSound(iOSSoundIDs.AudioToneBusy);
+  //     }
+  //     setState(() {
+  //       tt = getTime;
+  //     });
+  //   });
+  // }
 
   Future<void> doneAlert() {
     return showDialog<void>(
@@ -101,12 +118,6 @@ class _Timer_PageState extends State<Timer_Page> {
         });
   }
 
-  final interval = const Duration(seconds: 1);
-
-  final int timerMaxSeconds = 5;
-
-  int currentSeconds = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,10 +162,12 @@ class _Timer_PageState extends State<Timer_Page> {
                                   timerController.pause();
                                   setState(() {
                                     pauseOrResume = 'TAP TO RESUME';
+                                    // notPaused = false;
                                   });
                                 } else {
                                   timerController.resume();
                                   setState(() {
+                                    // notPaused = true;
                                     pauseOrResume = 'TAP TO PAUSE';
                                   });
                                 }
@@ -177,16 +190,18 @@ class _Timer_PageState extends State<Timer_Page> {
                                 ),
                                 isReverse: true,
                                 autoStart: false,
+                                // onStart: lastThreeSeconds,
                                 onComplete: () {
-                                  // FlutterBeep.playSysSound(
-                                  //     iOSSoundIDs.CalendarAlert);
                                   if (onInterval) {
                                     if ((repsIsSwitched) && repCount == reps) {
                                       doneAlert();
+                                      // t.cancel();
                                       FlutterBeep.playSysSound(
                                           iOSSoundIDs.CalendarAlert);
                                     } else {
                                       FlutterBeep.beep();
+                                      // FlutterBeep.playSysSound(
+                                      //     iOSSoundIDs.AudioToneBusy);
                                       setState(() {
                                         onInterval = false;
                                         timerController.restart(
@@ -194,6 +209,8 @@ class _Timer_PageState extends State<Timer_Page> {
                                       });
                                     }
                                   } else {
+                                    // FlutterBeep.playSysSound(
+                                    //     iOSSoundIDs.AudioToneBusy);
                                     FlutterBeep.beep();
                                     setState(() {
                                       onInterval = true;
@@ -247,6 +264,7 @@ class _Timer_PageState extends State<Timer_Page> {
                     )),
                 onPressed: () {
                   onGoBack();
+                  // t.cancel();
                   Navigator.pop(context);
                   Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                 }),
@@ -275,14 +293,16 @@ class _Timer_PageState extends State<Timer_Page> {
                                     ),
                                   ))),
                           CircularCountDownTimer(
-                            duration: 4,
+                            duration: 3,
+                            warningBeeps: true,
+                            isStartCountdown: true,
                             fillColor: cream.withOpacity(0),
                             color: cream.withOpacity(0),
                             controller: startController,
                             width: 400,
                             height: 400,
                             strokeWidth: 10,
-                            textFormat: '',
+                            textFormat: CountdownTextFormat.SS,
                             textStyle: TextStyle(
                               color: salmon,
                               letterSpacing: 1.5,

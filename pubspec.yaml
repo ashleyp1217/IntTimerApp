@@ -25,10 +25,10 @@ dependencies:
     sdk: flutter
   english_words: ^3.1.5
   google_fonts: ^1.1.1
-  circular_countdown_timer: ^0.0.9
+  circular_countdown_timer:
+    path: ./circular_countdown_timer-0.0.9-hijacked/
   provider: ^4.3.3
   flutter_beep: ^0.2.0
-  flutter_countdown_timer: ^3.0.0
 
 
 
